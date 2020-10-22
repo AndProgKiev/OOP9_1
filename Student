@@ -1,0 +1,31 @@
+import java.io.Serializable;
+
+public class Student extends Human implements Serializable {
+    private int studentID;
+    public static final long serialVersionUID=1L;
+
+    public Student(String name, String surname, int age, Gender gender, int studentID) {
+        super(name, surname, age, gender);
+        this.studentID = studentID;
+    }
+
+    public Student() {
+
+    }
+
+    public int getStudentID() {
+        return studentID;
+    }
+
+    public void setStudentID(int studentID) {
+        this.studentID = studentID;
+    }
+
+
+
+    @Override
+    public String toString() {
+        return "studentID: "+ studentID+" "+ super.toString();
+
+    }
+}
