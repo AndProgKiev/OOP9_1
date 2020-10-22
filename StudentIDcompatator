@@ -1,0 +1,23 @@
+import java.util.Comparator;
+
+public class StudentIDcompatator implements Comparator<Student> {
+    @Override
+    public int compare(Student student1, Student student2) {
+        if(student1!=null&&student2==null){
+            return 1;
+        }
+        if (student1==null&&student2!=null){
+            return -1;
+        }
+        if (student1==null&&student2==null) {
+            return 0;
+        }
+
+         if ( student1.getStudentID()-student2.getStudentID()>0){
+            return 1;
+        }if (student1.getStudentID()-student2.getStudentID()<0){
+             return -1;
+        }
+        return 0;
+    }
+}
