@@ -1,0 +1,173 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+public class Groupe implements Voencom, Serializable{
+    private List<Student> studentList=new ArrayList();
+    public static final long serialVersionUID=1L;
+
+
+    public List<Student> getStudentList() {
+        return studentList;
+    }
+
+    public void addStudent(Student student) {
+
+        studentList.add(student);
+    }
+
+    public void readFromConsole() throws IOException {
+         BufferedReader reader =new BufferedReader(new InputStreamReader(System.in));
+        String name;
+        String surname;
+        int age;
+        String gender;
+        int studentId;
+
+        try {
+        System.out.println("Enter name");
+         name= reader.readLine();
+        System.out.println("Enter surname");
+        surname= reader.readLine();
+        System.out.println("Enter age");
+        String string = reader.readLine();
+        age= Integer.parseInt(string);
+        System.out.println("Enter gender: MALE OR FEMALE");
+         gender = reader.readLine();
+         System.out.println("Student id");
+        String string1 = reader.readLine();
+        studentId = Integer.parseInt(string1);
+        addStudent(new Student(name,surname,age,Gender.valueOf(gender),studentId));
+    }catch (IOException e){
+        System.out.println(e.getMessage());
+    }
+
+    }
+
+    public void readFromFile(String dataBase)throws IOException{
+        String name;
+        String surname;
+        int age;
+        String gender;
+        int studentId;
+
+            try (BufferedReader reader= new BufferedReader(new FileReader(dataBase))){
+                String line;
+                while ((line=reader.readLine())!=null) {
+                    String[] element = line.split(";");
+
+                    name = element[0];
+                    surname = element[1];
+                    age = Integer.parseInt(element[2]);
+                    gender = element[3];
+                    studentId = Integer.parseInt(element[4]);
+
+                    addStudent(new Student(name, surname, age, Gender.valueOf(gender), studentId));
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+    }
+
+    public static Groupe readFromFileSerialization (String path) throws IOException{
+        Groupe groupe=null;
+        try (ObjectInputStream inputStream=new ObjectInputStream(new FileInputStream(path))){
+
+            groupe = (Groupe) inputStream.readObject();
+
+        }catch (IOException | ClassNotFoundException e){
+            e.printStackTrace();
+        }
+        return groupe;
+    }
+
+    public void writeToFileSerialization(String path)throws IOException{
+        try (ObjectOutputStream objectOutputStream=new ObjectOutputStream(new FileOutputStream(path+"\\studentslist"))) {
+            objectOutputStream.writeObject(this);
+
+            System.out.println("Successful write to file");
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+    }
+    public void writeGroupeToFile(String fileName) throws IOException{
+          try (PrintWriter printWriter=new PrintWriter(new File(fileName))) {
+              for (Student student:studentList) {
+                  if (student != null) {
+                      printWriter.println(student.toString());
+                  }
+              }
+
+          }catch (IOException e){
+              e.printStackTrace();
+          }
+
+    }
+
+    public void removeStudent(int studentID)  {
+        if (studentID<=0){
+            System.out.println("Введено не корректное ID студента");
+        }else {
+            for (Student student:studentList) {
+                if(student.getStudentID()==studentID){
+                    studentList.remove(student);
+                    break;
+                }
+            }
+
+        }
+
+    }
+
+    public void sortBySurname(){
+
+        Collections.sort(studentList,new StudentSurnameComparator());
+
+    }
+
+    public void sortByStudentID(){
+        Collections.sort(studentList,new StudentIDcompatator());
+    }
+
+    public Student findBySurname(String surname) throws MyException{
+
+        Student student=null;
+        for (Student st:studentList) {
+            if(st.getSurname().equalsIgnoreCase(surname)){
+                return st;
+            }
+        }
+        System.out.println("Студента с фамилией "+ surname+ " не существует");
+        return student;
+
+    }
+
+    @Override
+    public List<Student> getConscript() {
+       List<Student> conscriptList=new ArrayList<>();
+        for (Student student:studentList) {
+            if(student.getAge()>=18&&student.getGender()==Gender.MALE){
+                conscriptList.add(student);
+            }
+        }
+        return conscriptList;
+    }
+
+    @Override
+    public String toString() {
+        String students="";
+        for (Student s:studentList){
+            students += s.toString();
+
+        }
+        return "Groupe{" +
+                "studentList=" + students +
+                '}';
+    }
+
+}
